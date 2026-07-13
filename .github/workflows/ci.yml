@@ -29,3 +29,13 @@ jobs:
 
       - name: Run tests
         run: pytest -v
+
+      - name: Build Docker image
+        run: docker build -t cicd-learning:${{ github.sha }} .
+
+      - name: Run container and test endpoint
+        run: |
+          docker run -d -p 5000:5000 --name test-container cicd-learning:${{ github.sha }}
+          sleep 3
+          curl --fail http://localhost:5000/health
+          docker stop test-container
